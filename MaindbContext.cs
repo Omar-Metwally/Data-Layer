@@ -25,6 +25,8 @@ public partial class MaindbContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
+    public virtual DbSet<OrderdProduct> OrderdProducts { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -129,33 +131,54 @@ public partial class MaindbContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => new { e.OrderId, e.CustomerId, e.ProductId })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+            entity.HasKey(e => e.OrderId).HasName("PRIMARY");
 
             entity.ToTable("orders");
 
             entity.HasIndex(e => e.CustomerId, "fk_Orders_Customers1_idx");
 
-            entity.HasIndex(e => e.ProductId, "fk_Orders_Products1_idx");
-
-            entity.Property(e => e.OrderId).HasColumnName("Order_ID");
+            entity.Property(e => e.OrderId)
+                .ValueGeneratedNever()
+                .HasColumnName("Order_ID");
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
-            entity.Property(e => e.ProductId).HasColumnName("Product_ID");
             entity.Property(e => e.OrderDate)
                 .HasColumnType("datetime")
                 .HasColumnName("Order_Date");
-            entity.Property(e => e.Qty).HasColumnName("QTY");
+            entity.Property(e => e.OrderStatus)
+                .HasMaxLength(45)
+                .HasColumnName("Order_Status");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_Orders_Customers1");
+        });
 
-            entity.HasOne(d => d.Product).WithMany(p => p.Orders)
+        modelBuilder.Entity<OrderdProduct>(entity =>
+        {
+            entity.HasKey(e => new { e.OrderId, e.ProductId })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("orderd_products");
+
+            entity.HasIndex(e => e.OrderId, "fk_Orderd_Products_Orders1_idx");
+
+            entity.HasIndex(e => e.ProductId, "fk_Orderd_Products_Products1_idx");
+
+            entity.Property(e => e.OrderId).HasColumnName("Order_ID");
+            entity.Property(e => e.ProductId).HasColumnName("Product_ID");
+            entity.Property(e => e.Qty).HasColumnName("QTY");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderdProducts)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Orderd_Products_Orders1");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.OrderdProducts)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_Orders_Products1");
+                .HasConstraintName("fk_Orderd_Products_Products1");
         });
 
         modelBuilder.Entity<Product>(entity =>
