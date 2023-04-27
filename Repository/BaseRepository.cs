@@ -1,14 +1,6 @@
 ﻿using Infrastructure_Layer.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data_Layer;
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Infrastructure_Layer.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Data_Layer.Repository
 {

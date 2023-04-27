@@ -2,11 +2,6 @@
 using Infrastructure_Layer;
 using Infrastructure_Layer.Models;
 using Infrastructure_Layer.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data_Layer
 {
@@ -19,10 +14,10 @@ namespace Data_Layer
             _context = context;
             Customers = new BaseRepository<Customer>(_context);
 
-            Products = new BaseRepository<Product>(_context);   
+            Products = new BaseRepository<Product>(_context);
         }
 
-        public IBaseRepository<Customer> Customers { get;private set; }
+        public IBaseRepository<Customer> Customers { get; private set; }
 
         public IBaseRepository<Product> Products { get; private set; }
 
@@ -37,6 +32,6 @@ namespace Data_Layer
         public void Save()
         {
             _context.SaveChanges();
-        } 
+        }
     }
 }

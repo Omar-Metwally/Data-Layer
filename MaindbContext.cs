@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Infrastructure_Layer.Models;
+﻿using Infrastructure_Layer.Models;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure_Layer;
 
 namespace Data_Layer;
 
@@ -93,6 +90,7 @@ public partial class MaindbContext : DbContext
             entity.HasIndex(e => e.Phone, "Phone_UNIQUE").IsUnique();
 
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
+            entity.Property(e => e.Cookie).HasColumnType("text");
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("Create_Date");
