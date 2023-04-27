@@ -143,7 +143,7 @@ public partial class MaindbContext : DbContext
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
             entity.Property(e => e.ProductId).HasColumnName("Product_ID");
             entity.Property(e => e.OrderDate)
-                .HasMaxLength(45)
+                .HasColumnType("datetime")
                 .HasColumnName("Order_Date");
             entity.Property(e => e.Qty).HasColumnName("QTY");
 
