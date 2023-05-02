@@ -1,5 +1,6 @@
 ﻿using Infrastructure_Layer.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Drawing.Drawing2D;
 
 namespace Data_Layer;
 
@@ -14,6 +15,7 @@ public partial class MaindbContext : DbContext
     {
     }
 
+    public virtual DbSet<Brand> Brands { get; set; }
 
     public virtual DbSet<Cart> Carts { get; set; }
 
@@ -38,19 +40,31 @@ public partial class MaindbContext : DbContext
             .UseCollation("utf8mb3_general_ci")
             .HasCharSet("utf8mb3");
 
+        modelBuilder.Entity<Brand>(entity =>
+        {
+            entity.HasKey(e => e.BrandId).HasName("PRIMARY");
+
+            entity.ToTable("brands");
+
+            entity.Property(e => e.BrandId)
+                .ValueGeneratedNever()
+                .HasColumnName("Brand_ID");
+            entity.Property(e => e.BrandName)
+                .HasMaxLength(45)
+                .HasColumnName("Brand_Name");
+        });
 
         modelBuilder.Entity<Cart>(entity =>
         {
             entity.HasKey(e => new { e.CustomerId, e.ProductId })
                 .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
             entity.ToTable("cart");
 
             entity.HasIndex(e => e.CustomerId, "fk_Cart_Customers1_idx");
 
             entity.HasIndex(e => e.ProductId, "fk_Cart_Products1_idx");
-
 
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
             entity.Property(e => e.ProductId).HasColumnName("Product_ID");
@@ -92,6 +106,7 @@ public partial class MaindbContext : DbContext
             entity.HasIndex(e => e.Phone, "Phone_UNIQUE").IsUnique();
 
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
+            entity.Property(e => e.Area).HasMaxLength(45);
             entity.Property(e => e.Cookie).HasColumnType("text");
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
@@ -103,6 +118,7 @@ public partial class MaindbContext : DbContext
             entity.Property(e => e.FirstName)
                 .HasMaxLength(45)
                 .HasColumnName("First_Name");
+            entity.Property(e => e.House).HasMaxLength(45);
             entity.Property(e => e.LastName)
                 .HasMaxLength(45)
                 .HasColumnName("Last_Name");
@@ -111,6 +127,7 @@ public partial class MaindbContext : DbContext
                 .HasColumnName("Middle_Name");
             entity.Property(e => e.Password).HasMaxLength(45);
             entity.Property(e => e.Phone).HasMaxLength(45);
+            entity.Property(e => e.Streat).HasMaxLength(45);
         });
 
         modelBuilder.Entity<MeasuresOfScale>(entity =>
@@ -140,13 +157,16 @@ public partial class MaindbContext : DbContext
             entity.Property(e => e.OrderId)
                 .ValueGeneratedNever()
                 .HasColumnName("Order_ID");
+            entity.Property(e => e.Area).HasMaxLength(45);
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
+            entity.Property(e => e.House).HasMaxLength(45);
             entity.Property(e => e.OrderDate)
                 .HasColumnType("datetime")
                 .HasColumnName("Order_Date");
             entity.Property(e => e.OrderStatus)
                 .HasMaxLength(45)
                 .HasColumnName("Order_Status");
+            entity.Property(e => e.Streat).HasMaxLength(45);
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.CustomerId)
@@ -187,11 +207,14 @@ public partial class MaindbContext : DbContext
 
             entity.ToTable("products");
 
+            entity.HasIndex(e => e.BrandId, "fk_Products_Brands1_idx");
+
             entity.HasIndex(e => e.CategoryId, "fk_Products_Category1_idx");
 
             entity.HasIndex(e => e.MeasureOfScaleId, "fk_Products_table11_idx");
 
             entity.Property(e => e.ProductId).HasColumnName("Product_ID");
+            entity.Property(e => e.BrandId).HasColumnName("Brand_ID");
             entity.Property(e => e.CategoryId).HasColumnName("Category_ID");
             entity.Property(e => e.Description).HasColumnType("tinytext");
             entity.Property(e => e.Image1).HasMaxLength(45);
@@ -207,6 +230,12 @@ public partial class MaindbContext : DbContext
             entity.Property(e => e.SignupDate)
                 .HasColumnType("datetime")
                 .HasColumnName("Signup_Date");
+            entity.Property(e => e.Size).HasMaxLength(45);
+
+            entity.HasOne(d => d.Brand).WithMany(p => p.Products)
+                .HasForeignKey(d => d.BrandId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Products_Brands1");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
