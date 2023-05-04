@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
+
 namespace Data_Layer.Repository
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
