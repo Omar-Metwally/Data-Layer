@@ -29,6 +29,8 @@ public partial class MaindbContext : DbContext
 
     public virtual DbSet<OrderdProduct> OrderdProducts { get; set; }
 
+    public virtual DbSet<Payment> Payments { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -56,7 +58,7 @@ public partial class MaindbContext : DbContext
 
         modelBuilder.Entity<Cart>(entity =>
         {
-            entity.HasKey(e => new { e.CustomerId, e.ProductId })
+            entity.HasKey(e => new { e.ProductId, e.CustomerId })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
@@ -66,8 +68,8 @@ public partial class MaindbContext : DbContext
 
             entity.HasIndex(e => e.ProductId, "fk_Cart_Products1_idx");
 
-            entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
             entity.Property(e => e.ProductId).HasColumnName("Product_ID");
+            entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
             entity.Property(e => e.Qty).HasColumnName("QTY");
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Carts)
@@ -106,19 +108,14 @@ public partial class MaindbContext : DbContext
             entity.HasIndex(e => e.Phone, "Phone_UNIQUE").IsUnique();
 
             entity.Property(e => e.CustomerId).HasColumnName("Customer_ID");
-            entity.Property(e => e.Area).HasMaxLength(45);
             entity.Property(e => e.Cookie).HasColumnType("text");
             entity.Property(e => e.CreateDate)
                 .HasColumnType("datetime")
                 .HasColumnName("Create_Date");
-            entity.Property(e => e.CreditDebitCard)
-                .HasMaxLength(45)
-                .HasColumnName("Credit/Debit_Card");
             entity.Property(e => e.Email).HasMaxLength(45);
             entity.Property(e => e.FirstName)
                 .HasMaxLength(45)
                 .HasColumnName("First_Name");
-            entity.Property(e => e.House).HasMaxLength(45);
             entity.Property(e => e.LastName)
                 .HasMaxLength(45)
                 .HasColumnName("Last_Name");
@@ -127,7 +124,6 @@ public partial class MaindbContext : DbContext
                 .HasColumnName("Middle_Name");
             entity.Property(e => e.Password).HasMaxLength(45);
             entity.Property(e => e.Phone).HasMaxLength(45);
-            entity.Property(e => e.Streat).HasMaxLength(45);
         });
 
         modelBuilder.Entity<MeasuresOfScale>(entity =>
@@ -166,6 +162,7 @@ public partial class MaindbContext : DbContext
             entity.Property(e => e.OrderStatus)
                 .HasMaxLength(45)
                 .HasColumnName("Order_Status");
+            entity.Property(e => e.PayedByVisa).HasColumnName("Payed_By_Visa");
             entity.Property(e => e.Streat).HasMaxLength(45);
 
             entity.HasOne(d => d.Customer).WithMany(p => p.Orders)
@@ -199,6 +196,35 @@ public partial class MaindbContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_Orderd_Products_Products1");
+        });
+
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.OrderId).HasName("PRIMARY");
+
+            entity.ToTable("payments");
+
+            entity.Property(e => e.OrderId)
+                .ValueGeneratedNever()
+                .HasColumnName("Order_ID");
+            entity.Property(e => e.CardName)
+                .HasMaxLength(45)
+                .HasColumnName("Card_Name");
+            entity.Property(e => e.CardNumber)
+                .HasMaxLength(45)
+                .HasColumnName("Card_Number");
+            entity.Property(e => e.Cvc)
+                .HasMaxLength(3)
+                .HasColumnName("CVC");
+            entity.Property(e => e.ExpireDate)
+                .HasMaxLength(45)
+                .HasColumnName("Expire_Date");
+            entity.Property(e => e.PaymentAmount).HasColumnName("Payment_Amount");
+
+            entity.HasOne(d => d.Order).WithOne(p => p.Payment)
+                .HasForeignKey<Payment>(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_Payments_Orders1");
         });
 
         modelBuilder.Entity<Product>(entity =>
