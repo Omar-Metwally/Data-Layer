@@ -1,5 +1,6 @@
 ﻿using Infrastructure_Layer.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 
 
@@ -27,6 +28,11 @@ namespace Data_Layer.Repository
         public T GetByID(int id)
         {
             return _context.Set<T>().Find(id);
+        }
+
+        public List <T> GetByIDAll(int id, int id2)
+        {
+            return _context.Set<T>().Where(x => id == id2).ToList();
         }
 
 
@@ -80,6 +86,13 @@ namespace Data_Layer.Repository
                 return null;
             }
         }
+
+        public T? Delete(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+            return null;
+        }
+
         public T? Index()
         {
             var query = from c in _context.Categorys

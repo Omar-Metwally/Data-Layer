@@ -12,9 +12,16 @@ namespace Data_Layer
         public UnitOfWork(MaindbContext context)
         {
             _context = context;
+
             Customers = new BaseRepository<Customer>(_context);
 
             Products = new BaseRepository<Product>(_context);
+
+            Carts = new BaseRepository<Cart>(_context);
+
+            Orders = new BaseRepository<Order>(_context);
+
+            OrderdProducts = new BaseRepository<OrderdProduct>(_context);
         }
 
         public IBaseRepository<Customer> Customers { get; private set; }
@@ -22,6 +29,10 @@ namespace Data_Layer
         public IBaseRepository<Product> Products { get; private set; }
 
         public IBaseRepository<Cart> Carts { get; private set; }
+
+        public IBaseRepository<Order> Orders { get; private set; }
+
+        public IBaseRepository<OrderdProduct> OrderdProducts { get; private set; }
 
         public IBaseRepository<List<object>> objects { get; private set; }
 
